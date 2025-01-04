@@ -1,0 +1,110 @@
+{
+  "name": "hospital-system",
+  "version": "1",
+  "items": [
+    {
+      "type": "folder",
+      "name": "Appointment service",
+      "items": [
+        {
+          "type": "http",
+          "name": "index",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8003/",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Patient service",
+      "items": [
+        {
+          "type": "http",
+          "name": "index",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8002",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "user service",
+      "items": [
+        {
+          "type": "http",
+          "name": "index",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8001/",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "environments": [],
+  "brunoConfig": {
+    "version": "1",
+    "name": "hospital-system",
+    "type": "collection",
+    "ignore": [
+      "node_modules",
+      ".git"
+    ],
+    "presets": {
+      "requestType": "http",
+      "requestUrl": "http://localhost"
+    }
+  }
+}

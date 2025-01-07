@@ -13,5 +13,9 @@ air -c .air.toml &
 cd ../appointment-service
 air -c .air.toml &
 
+# Start auth service
+cd ../auth-service
+air -c .air.toml &
+
 # Wait for all background processes
 wait

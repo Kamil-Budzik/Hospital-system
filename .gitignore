@@ -2,3 +2,5 @@
 ./services/patient-service/temp
 ./services/appointment-service/temp
 
+
+./services/*/tmp

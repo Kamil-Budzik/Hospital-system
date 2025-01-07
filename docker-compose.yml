@@ -40,6 +40,18 @@ services:
     # depends_on:
     #   - postgres
 
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/auth-service/Dockerfile
+    ports:
+      - "8004:8004"
+    environment:
+      - SERVER_PORT=8004
+    volumes:
+      - ./services/auth-service:/app
+    # depends_on:
+    #   - postgres
   # postgres:
   #   image: postgres:latest
   #   ports:

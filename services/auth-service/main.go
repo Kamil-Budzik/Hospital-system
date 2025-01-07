@@ -6,6 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/kamil-budzik/hospital-system/auth-service/db"
+	"github.com/kamil-budzik/hospital-system/auth-service/routes"
 )
 
 func main() {
@@ -14,18 +16,17 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	r := gin.Default()
+	err = db.InitDB()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// Routes
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"status":  "ok",
-			"service": "auth-service",
-		})
-	})
+	server := gin.Default()
+
+	routes.RegisterRoutes(server)
 
 	// Start server
 	port := os.Getenv("SERVER_PORT")
 	log.Printf("Auth service starting on port %s", port)
-	r.Run(":" + port)
+	server.Run(":" + port)
 }

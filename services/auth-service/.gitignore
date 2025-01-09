@@ -1,3 +1,4 @@
 api.db
 /tmp/
 ./tests/api.db
+./tests/test.db

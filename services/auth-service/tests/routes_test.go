@@ -2,11 +2,14 @@ package tests
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/kamil-budzik/hospital-system/auth-service/db"
 	"github.com/kamil-budzik/hospital-system/auth-service/routes"
 	"github.com/kamil-budzik/hospital-system/auth-service/utils"
@@ -65,7 +68,6 @@ func TestLoginRoute(t *testing.T) {
 
 	router := setupRouter()
 
-	// Test valid login
 	validPayload := `{"email":"test@example.com","password":"password123"}`
 	req, _ := http.NewRequest("POST", "/login", bytes.NewBuffer([]byte(validPayload)))
 	req.Header.Set("Content-Type", "application/json")
@@ -77,12 +79,30 @@ func TestLoginRoute(t *testing.T) {
 		t.Errorf("Expected status %d but got %d", http.StatusOK, w.Code)
 	}
 
-	expected := `{"message":"Login successful","token":"OUDAB"}`
-	if w.Body.String() != expected {
-		t.Errorf("Expected body %s but got %s", expected, w.Body.String())
+	var responseBody map[string]interface{}
+	if err := json.Unmarshal(w.Body.Bytes(), &responseBody); err != nil {
+		t.Fatalf("Failed to parse response body: %s", err)
 	}
 
-	// Test invalid login
+	if responseBody["message"] != "Login successful" {
+		t.Errorf("Expected message 'Login successful' but got '%v'", responseBody["message"])
+	}
+
+	tokenString, ok := responseBody["token"].(string)
+	if !ok || tokenString == "" {
+		t.Fatal("Expected a valid token in the response")
+	}
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte("desnuts"), nil
+	})
+	if err != nil || !token.Valid {
+		t.Errorf("Token is invalid: %s", err)
+	}
+
 	invalidPayload := `{"email":"test@example.com","password":"wrongpassword"}`
 	req, _ = http.NewRequest("POST", "/login", bytes.NewBuffer([]byte(invalidPayload)))
 	req.Header.Set("Content-Type", "application/json")
@@ -94,8 +114,8 @@ func TestLoginRoute(t *testing.T) {
 		t.Errorf("Expected status %d but got %d", http.StatusUnauthorized, w.Code)
 	}
 
-	expected = `{"message":"Could not authenticate user"}`
-	if w.Body.String() != expected {
-		t.Errorf("Expected body %s but got %s", expected, w.Body.String())
+	expectedError := `{"message":"Could not authenticate user"}`
+	if w.Body.String() != expectedError {
+		t.Errorf("Expected body %s but got %s", expectedError, w.Body.String())
 	}
 }

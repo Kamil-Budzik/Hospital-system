@@ -16,6 +16,7 @@ func CreateToken(id int64) (string, error) {
 		"sub": id,
 		"exp": time.Now().Add(time.Hour * 12).Unix(),
 		"iat": time.Now().Unix(),
+		"iss": "hospital-frontend",
 	})
 
 	tokenString, err := claims.SignedString(secretKey)

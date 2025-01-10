@@ -1,62 +1,76 @@
 version: '3.8'
 
 services:
+  kong:
+    image: kong:latest
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: "/usr/local/kong/declarative/kong.yml"
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001"
+    ports:
+      - "8000:8000"  # Kong proxy port
+      - "8001:8001"  # Kong admin API port
+    volumes:
+      - ./kong.yml:/usr/local/kong/declarative/kong.yml
+    networks:
+      - hospital-network
+    
   user-service:
     build:
       context: .
       dockerfile: services/user-service/Dockerfile
     ports:
-      - "8001:8001"
+      - "9001:9001"
     environment:
-      - SERVER_PORT=8001
+      - SERVER_PORT=9001
     volumes:
       - ./services/user-service:/app
-    # depends_on:
-    #   - postgres
-
+    networks:
+      - hospital-network
+    
   patient-service:
     build:
       context: .
       dockerfile: services/patient-service/Dockerfile
     ports:
-      - "8002:8002"
+      - "9002:9002"
     environment:
-      - SERVER_PORT=8002
+      - SERVER_PORT=9002
     volumes:
       - ./services/patient-service:/app
-    # depends_on:
-    #   - postgres
-
+    networks:
+      - hospital-network
+    
   appointment-service:
     build:
       context: .
       dockerfile: services/appointment-service/Dockerfile
     ports:
-      - "8003:8003"
+      - "9003:9003"
     environment:
-      - SERVER_PORT=8003
+      - SERVER_PORT=9003
     volumes:
       - ./services/appointment-service:/app
-    # depends_on:
-    #   - postgres
-
+    networks:
+      - hospital-network
+    
   auth-service:
     build:
       context: .
       dockerfile: services/auth-service/Dockerfile
     ports:
-      - "8004:8004"
+      - "9004:9004"
     environment:
-      - SERVER_PORT=8004
+      - SERVER_PORT=9004
     volumes:
       - ./services/auth-service:/app
-    # depends_on:
-    #   - postgres
-  # postgres:
-  #   image: postgres:latest
-  #   ports:
-  #     - "5432:5432"
-  #   environment:
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #     - POSTGRES_DB=hospital
+    networks:
+      - hospital-network
+
+networks:
+  hospital-network:
+    driver: bridge
